@@ -10,12 +10,13 @@ const CreateWorkflow = ({ addWorkflow }) => {
     e.preventDefault();
     if (!name.trim()) return;
     addWorkflow({ id: Date.now().toString(), name, status });
-    navigate("/"); // Redirect to the workflow list
+    navigate("/");
   };
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Create Workflow</h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-semibold">Workflow Name:</label>
