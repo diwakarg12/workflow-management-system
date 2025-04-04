@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEllipsisV } from "react-icons/fa";
+import { FaArrowUp, FaEllipsisV } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa6";
 import { TiPin } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,12 +9,14 @@ import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { logout } from "../features/authSlice";
 import { Button, Typography } from "@mui/material";
+import WorkflowExecutionHistory from "./WorkflowExecutionHistory";
 
 const WorkflowList = () => {
   const [search, setSearch] = useState("");
   const [workflows, setWorkflows] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteButton, setShowDeleteButton] = useState(false)
+  const [showExecutionHis, setShowExecutionHis] = useState(false);
   const workflowsPerPage = 10;
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -110,6 +112,7 @@ const WorkflowList = () => {
           {currentWorkflows
             .filter((w) => w.name.toLowerCase().includes(search.toLowerCase()))
             .map((w) => (
+              <>
               <tr key={w.id} className="border-t">
                 <td className="p-2 text-center">
                   {w.name ? w.name : "Sample Name"}
@@ -117,20 +120,33 @@ const WorkflowList = () => {
                 <td className="p-2  text-center">#{w.id ? w.id : 'jdrgnvdnvd1'}</td>
                 <td className="p-2  text-center">{w.lastEditedOn ? w.lastEditedOn : userEmail}</td>
                 <td className="p-2  text-center">{w.description ? w.description : 'Lorem ipsum dolor sit, amet consectetur'}</td>
-                <td className="p-2  flex space-x-3 border-2 items-center justify-center relative">
+                <td className="p-2  flex space-x-3 items-center justify-center relative">
                 <TiPin className="size-6 text-yellow-500 mr-6" />
-                  <button className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Execute</button>
+                  <button className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0] cursor-pointer">Execute</button>
                   <Link to={`/edit-workflow/${w.id}`} className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Edit</Link>
                   {
-                    showDeleteButton && <button onClick={() => handleDelete(w.id)} className="absolute top-10 left-7/12 px-3 py-1 rounded border-[1.5px] border-[#E0E0E0] bg-white">
+                    showDeleteButton && <button onClick={() => handleDelete(w.id)} className="absolute top-10 left-7/12 px-3 py-1 rounded border-[1.5px] border-[#E0E0E0] bg-white cursor-pointer">
                     Delete
                   </button>
                   }
                   <FaEllipsisV className="cursor-pointer size-5" onClick={ShowDeleteButton} />
-                  <FaArrowDown className="cursor-pointer size-5" />
+                  <div onClick={()=>setShowExecutionHis(prev=>!prev)}>
+                    {showExecutionHis ? <FaArrowUp className="cursor-pointer size-5" /> : <FaArrowDown className="cursor-pointer size-5" />}
+                  </div>
 
                 </td>
               </tr>
+              {
+                showExecutionHis && 
+                (<tr className="p-4 bg-[#FFFAF2]">
+                  <td colSpan={2}><WorkflowExecutionHistory workFlowDta={w} /></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  </tr>
+                )
+              }
+            </>
             ))}
         </tbody>
       </table>
