@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../utils/firebase";
 import { logout } from "../features/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { getWorkflowById } from "../utils/firestoreService";
+import { getWorkflowById, updateWorkflow } from "../utils/firestoreService";
 import { 
   Card,
   Dialog,
@@ -25,13 +25,13 @@ const EditWorkflow = () => {
   const dispatch = useDispatch();
   const userEmail = useSelector(store=>store.auth.user.email)
   const [workflow, setWorkflow] = useState([]);
-  const [nodes, setNodes] = useState(workflow.nodes);
+  const [nodes, setNodes] = useState([]);
   const [showNodeOptions, setShowNodeOptions] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
-  const [nodeConfigs, setNodeConfigs] = useState(workflow.nodeConfigs);
+  const [nodeConfigs, setNodeConfigs] = useState({});
   const [workflowDetails, setWorkflowDetails] = useState({
-    name: workflow.name,
-    description: workflow.description,
+    name: "",
+    description: "",
   });
 
   console.log('workFlowww', workflow);
@@ -108,6 +108,9 @@ const EditWorkflow = () => {
       try {
         const flow = await getWorkflowById(id)
         setWorkflow(flow);
+        setNodes(flow.nodes)
+        setNodeConfigs(flow.nodeConfigs)
+        setWorkflowDetails({name: flow.name, description: flow.description})
         console.log('WorkFlows', flow)
       } catch (error) {
         console.error("Error fetching workflows:", error);
@@ -117,14 +120,22 @@ const EditWorkflow = () => {
     getWorkflow();
   }, []);
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    const storedWorkflows = JSON.parse(localStorage.getItem("workflows")) || [];
-    const updatedWorkflows = storedWorkflows.map((w) =>
-      w.id === id ? { ...w, ...workflow } : w
-    );
-    localStorage.setItem("workflows", JSON.stringify(updatedWorkflows));
-    navigate("/");
+    try {
+      const workflow = {
+        ...workflowDetails,
+        nodes,
+        nodeConfigs,
+        email: userEmail,
+        createdAt: new Date().toISOString(),
+      };
+        await updateWorkflow(id, workflow);
+        console.log("Workflow updated successfully!");
+        navigate("/");
+    } catch (error) {
+        console.error("Error updating workflow: ", error);
+    }
   };
 
   const handleLogout = async () => {
