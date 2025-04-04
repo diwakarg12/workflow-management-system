@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { login } from "../features/authSlice";
-import { auth } from "../Utils/firebase";
+import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import bgImage from "../assets/LoginBg.png";
@@ -41,11 +41,11 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex justify-end relative overflow-y-hidden">
+    <div className="flex md:justify-end justify-center relative overflow-y-hidden">
             <img src={bgImage} alt="" className="w-full h-screen" />
-          <div className="absolute z-1 flex w-2/3 my-10 mx-16 rounded-lg overflow-hidden">
+          <div className="absolute z-1 flex flex-col md:flex-row w-full items-center sm:w-2/3 my-10 md:mx-16 rounded-lg overflow-hidden">
             {/* Left Side */}
-            <div className="w-1/2 flex flex-col mt-32">
+            <div className="flex-col md:w-1/2 w-2/3 md:mt-1 my-10 hidden md:flex">
               <div className="flex gap-x-1 items-center">
                 <img src={Logo} alt="Logo" className="w-10" />
                 <h1 className="text-3xl font-bold text-gray-200">HighBridge</h1>
@@ -56,7 +56,7 @@ const Signup = () => {
               </div>
             </div>
             {/* Right Side */}
-            <div className="w-2/3 p-10 bg-white rounded-t-xl">
+            <div className="md:w-2/3 w-11/12 p-10 2xl:py-24 bg-white rounded-t-xl xl:rounded-xl">
               <p className="text-lg font-semibold">WELCOME TO HIGHBRIDGE!</p>
               <h2 className="text-3xl font-bold mb-4">Create your Account Here</h2>
               <form onSubmit={handleSignup}>

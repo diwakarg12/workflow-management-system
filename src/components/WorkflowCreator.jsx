@@ -160,7 +160,6 @@ export default function WorkflowBuilder() {
         ))}
       </div>
 
-      {/* Node Type Selection Dialog */}
       <Dialog open={showNodeOptions} onClose={() => setShowNodeOptions(false)}>
         <DialogContent>
           <DialogTitle>Select Node Type</DialogTitle>
@@ -172,7 +171,6 @@ export default function WorkflowBuilder() {
         </DialogContent>
       </Dialog>
 
-      {/* Node Configuration Dialog */}
       <Dialog open={!!selectedNode} onClose={() => setSelectedNode(null)}>
         <DialogContent>
           <DialogTitle>Configure {selectedNode?.type}</DialogTitle>
@@ -234,7 +232,6 @@ export default function WorkflowBuilder() {
         </DialogActions>
       </Dialog>
 
-      {/* Save Workflow Button */}
       <Button
         variant="contained"
         color="primary"
@@ -244,7 +241,6 @@ export default function WorkflowBuilder() {
         Save Workflow
       </Button>
 
-      {/* Workflow Details Dialog */}
       <Dialog
         open={isWorkflowDetailsDialogOpen}
         onClose={closeWorkflowDetailsDialog}
@@ -274,7 +270,6 @@ export default function WorkflowBuilder() {
         </DialogActions>
       </Dialog>
 
-      {/* Confirmation Dialog */}
       <Dialog open={isConfirmationDialogOpen} onClose={closeConfirmationDialog}>
         <DialogTitle>Are you sure you want to Execute the process {workflowDetails.name ? workflowDetails.name : ""}?</DialogTitle>
         <DialogActions>

@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEllipsisV } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa6";
 import { TiPin } from "react-icons/ti";
-
-
+import { useSelector } from "react-redux";
 
 const WorkflowList = () => {
   const [search, setSearch] = useState("");
@@ -13,6 +12,7 @@ const WorkflowList = () => {
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const workflowsPerPage = 10;
   const navigate = useNavigate();
+  const userEmail = useSelector(store =>store.auth.user.email)
 
   useEffect(() => {
     const storedWorkflows = JSON.parse(localStorage.getItem("workflows")) || [];
@@ -34,12 +34,6 @@ const WorkflowList = () => {
   const indexOfLast = currentPage * workflowsPerPage;
   const indexOfFirst = indexOfLast - workflowsPerPage;
   const currentWorkflows = workflows.slice(indexOfFirst, indexOfLast);
-//   const currentWorkflows = [{
-//    id: 1,
-//    name: 'Diwakar Giri',
-//     lastEditedOn: 'Diwakar Giri',
-//     description: 'Some description here regarding the flow..',
-//   }]
 
   return (
     <div className="p-6 bg-[#FDFBF6] min-h-screen">
@@ -78,11 +72,11 @@ const WorkflowList = () => {
             .map((w) => (
               <tr key={w.id} className="border-t">
                 <td className="p-2 text-center">
-                  {w.name}
+                  {w.name ? w.name : "Sample Name"}
                 </td>
-                <td className="p-2  text-center">#{w.id}</td>
-                <td className="p-2  text-center">{w.lastEditedOn}</td>
-                <td className="p-2  text-center">{w.description}</td>
+                <td className="p-2  text-center">#{w.id ? w.id : 'jdrgnvdnvd1'}</td>
+                <td className="p-2  text-center">{w.lastEditedOn ? w.lastEditedOn : userEmail}</td>
+                <td className="p-2  text-center">{w.description ? w.description : 'Lorem ipsum dolor sit, amet consectetur'}</td>
                 <td className="p-2  flex space-x-3 border-2 items-center justify-center relative">
                 <TiPin className="size-6 text-yellow-500 mr-6" />
                   <button className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Execute</button>
@@ -101,17 +95,9 @@ const WorkflowList = () => {
         </tbody>
       </table>
 
-      {/* Pagination - Show only if more than 10 workflows */}
       {totalPages > 1 && (
         <div className="flex justify-end items-center mt-4 p-2">
           <div className="space-x-0.5">
-            {/* <button
-            className={`p-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            &#9664;
-          </button> */}
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
@@ -122,13 +108,6 @@ const WorkflowList = () => {
               </button>
             ))}
           </div>
-          {/* <button
-            className={`p-2 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            ▶
-          </button> */}
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../features/authSlice";
-import { auth } from "../Utils/firebase";
+import { auth } from "../utils/firebase";
 import { Link } from "react-router-dom";
 import bgImage from "../assets/LoginBg.png";
 import Logo from "../assets/Logo.png";
@@ -27,22 +27,25 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-end relative overflow-y-hidden">
+    <div className="flex md:justify-end justify-center relative overflow-y-hidden">
         <img src={bgImage} alt="" className="w-full h-screen" />
-      <div className="absolute z-1 flex w-2/3 my-10 mx-16 rounded-lg overflow-hidden">
+      <div className="absolute z-1 flex flex-col md:flex-row w-full items-center sm:w-2/3 my-10 md:mx-16 rounded-lg overflow-hidden">
         {/* Left Side */}
-        <div className="w-1/2 flex flex-col mt-32">
+        <div className="flex-col md:w-1/2 w-2/3 md:mt-1 my-10 hidden md:flex">
           <div className="flex gap-x-1 items-center">
             <img src={Logo} alt="Logo" className="w-10" />
             <h1 className="text-3xl font-bold text-gray-200">HighBridge</h1>
           </div>
           <div className="mt-12 flex flex-col text-white">
             <p className="text-lg font-semibold mt-4">Building the Future...</p>
-            <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+            <p className="text-sm mt-2">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
           </div>
         </div>
+
         {/* Right Side */}
-        <div className="w-2/3 p-10 bg-white rounded-t-xl">
+        <div className="md:w-2/3 w-11/12 p-10 2xl:py-24 bg-white rounded-t-xl xl:rounded-xl">
           <p className="text-lg font-semibold">WELCOME BACK!</p>
           <h2 className="text-3xl font-bold mb-4">Log In to your Account</h2>
           <form onSubmit={handleLogin}>
