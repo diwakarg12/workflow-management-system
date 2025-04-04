@@ -60,7 +60,7 @@ const Login = () => {
               </label>
               <a href="#" className="text-blue-500 text-sm">Forgot Password?</a>
             </div>
-            <button type="submit" className="w-full bg-red-500 text-white py-2 rounded">Log In</button>
+            <button type="submit" className="w-full bg-red-500 text-white py-2 rounded cursor-pointer">Log In</button>
           </form>
           <div className="text-center my-2">Or</div>
           <button className="w-full flex items-center justify-center border p-2 rounded">

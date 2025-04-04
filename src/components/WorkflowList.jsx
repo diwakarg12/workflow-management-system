@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEllipsisV } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa6";
 import { TiPin } from "react-icons/ti";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteWorkflow, getWorkflows } from "../utils/firestoreService";
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { logout } from "../features/authSlice";
+import { Button, Typography } from "@mui/material";
 
 const WorkflowList = () => {
   const [search, setSearch] = useState("");
@@ -12,21 +17,44 @@ const WorkflowList = () => {
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const workflowsPerPage = 10;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userEmail = useSelector(store =>store.auth.user.email)
 
   useEffect(() => {
-    const storedWorkflows = JSON.parse(localStorage.getItem("workflows")) || [];
-    setWorkflows(storedWorkflows);
+    const fetchWorkflows = async () => {
+
+      if (!userEmail) {
+        console.log("User not authenticated");
+        return;
+      }
+
+      try {
+        const workFlow = await getWorkflows(userEmail)
+        setWorkflows(Array.isArray(workFlow) ? workFlow : []);
+        console.log('WorkFlows', workFlow)
+      } catch (error) {
+        console.error("Error fetching workflows:", error);
+      }
+    };
+
+    fetchWorkflows();
   }, []);
 
   const handleDelete = (id) => {
     const updatedWorkflows = workflows.filter((w) => w.id !== id);
+    deleteWorkflow(id)
     setWorkflows(updatedWorkflows);
-    localStorage.setItem("workflows", JSON.stringify(updatedWorkflows));
+    
   };
 
   const ShowDeleteButton = () =>{
     setShowDeleteButton(prev=>!prev)
+  }
+
+  const handleLogout = async () => {
+    await signOut(auth)
+    dispatch(logout());
+    navigate("/login");
   }
 
   // Calculate pagination
@@ -37,7 +65,19 @@ const WorkflowList = () => {
 
   return (
     <div className="p-6 bg-[#FDFBF6] min-h-screen">
-        <h2 className="text-3xl font-bold">Workflow Builder</h2>
+        <div className="w-full flex items-center justify-between px-2">
+        <Typography sx={{ fontFamily: "Poppins, sans-serif", fontWeight: "bold"  }} variant="h5">
+          WorkFlow Builder
+        </Typography>
+        <Button 
+          variant="contained" 
+          color="error" 
+          sx={{ fontFamily: "Poppins, sans-serif" }}
+          onClick={handleLogout}
+        >
+          LogOut
+        </Button>
+      </div>
       <div className="flex justify-between items-center my-6">
         <input
         type="text"
@@ -80,7 +120,7 @@ const WorkflowList = () => {
                 <td className="p-2  flex space-x-3 border-2 items-center justify-center relative">
                 <TiPin className="size-6 text-yellow-500 mr-6" />
                   <button className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Execute</button>
-                  <button className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Edit</button>
+                  <Link to={`/edit-workflow/${w.id}`} className="px-3 py-1 rounded border-[1.5px] border-[#E0E0E0]">Edit</Link>
                   {
                     showDeleteButton && <button onClick={() => handleDelete(w.id)} className="absolute top-10 left-7/12 px-3 py-1 rounded border-[1.5px] border-[#E0E0E0] bg-white">
                     Delete

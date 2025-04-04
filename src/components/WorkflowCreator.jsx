@@ -13,13 +13,19 @@ import {
 import { MdDelete } from "react-icons/md";
 import { FaArrowDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // For redirection after save
+import { useDispatch, useSelector } from "react-redux";
+import { addWorkflow } from "../utils/firestoreService";
+import { auth } from "../utils/firebase";
+import { signOut } from "firebase/auth";
+import { logout } from "../features/authSlice";
 
 export default function WorkflowBuilder() {
   const [nodes, setNodes] = useState([
     { id: "start", type: "start" },
     { id: "end", type: "end" },
   ]);
-
+  const userEmail = useSelector(store =>store.auth.user.email);
+  const dispatch = useDispatch();
   const [showNodeOptions, setShowNodeOptions] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
   const [nodeConfigs, setNodeConfigs] = useState({});
@@ -87,34 +93,45 @@ export default function WorkflowBuilder() {
     setConfirmationDialogOpen(false);
   };
 
-  const confirmSaveWorkflow = () => {
-    const workflow = {
-      ...workflowDetails,
-      nodes,
-      nodeConfigs,
-    };
-    const existingWorkflows =
-      JSON.parse(localStorage.getItem("workflows")) || [];
-    existingWorkflows.push(workflow);
-    localStorage.setItem("workflows", JSON.stringify(existingWorkflows));
+  const confirmSaveWorkflow = async () => {
+  const workflow = {
+    ...workflowDetails,
+    nodes,
+    nodeConfigs,
+    email: userEmail,
+    createdAt: new Date().toISOString(),
+  };
+
+  try {
+    addWorkflow(workflow)
     closeConfirmationDialog();
     navigate("/");
-  };
+  } catch (error) {
+    console.error("Error saving workflow: ", error);
+    alert("Failed to save workflow. Try again.");
+  }
+};
+const handleLogout = async () => {
+  await signOut(auth)
+  dispatch(logout());
+  navigate("/login");
+}
 
   return (
     <div className="flex flex-col items-center p-4">
-      <Button
-        onClick={() => {
-          setNodes([
-            { id: "start", type: "start" },
-            { id: "end", type: "end" },
-          ]);
-          setNodeConfigs({});
-        }}
-        className="font-poppins"
-      >
-        Create Workflow
-      </Button>
+      <div className="w-full flex items-center justify-between px-2">
+        <Typography sx={{ fontFamily: "Poppins, sans-serif", fontWeight: "bold"  }} variant="h5">
+          Create WorkFlow
+        </Typography>
+        <Button 
+          variant="contained" 
+          color="error" 
+          sx={{ fontFamily: "Poppins, sans-serif" }}
+          onClick={handleLogout}
+        >
+          LogOut
+        </Button>
+      </div>
 
       <div className="relative mt-4 p-10 bg-[#F2E3C3] w-full h-full rounded-md flex flex-col items-center">
         {nodes.map((node, index) => (
@@ -232,14 +249,30 @@ export default function WorkflowBuilder() {
         </DialogActions>
       </Dialog>
 
-      <Button
-        variant="contained"
-        color="primary"
-        className="mt-4"
-        onClick={openWorkflowDetailsDialog}
-      >
-        Save Workflow
-      </Button>
+      <div className="flex items-center justify-center gap-x-5 my-4">
+        <Button
+          variant="contained"
+          color="success"
+          sx={{ fontFamily: "Poppins, sans-serif" }} 
+          onClick={openWorkflowDetailsDialog}
+        >
+          Save Workflow
+        </Button>
+        <Button 
+          variant="contained" 
+          color="error" 
+          sx={{ fontFamily: "Poppins, sans-serif" }} 
+          onClick={() => {
+            setNodes([
+              { id: "start", type: "start" },
+              { id: "end", type: "end" },
+            ]);
+            setNodeConfigs({});
+          }}
+        >
+          Reset WorkFlow
+        </Button>
+      </div>
 
       <Dialog
         open={isWorkflowDetailsDialogOpen}
